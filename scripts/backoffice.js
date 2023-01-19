@@ -1,5 +1,8 @@
 const url = "https://striveschool-api.herokuapp.com/api/product/"
 
+const params = new URLSearchParams(location.search)
+const id = params.get("id")
+console.log(id)
 
 const addProduct = async (publishProduct) => {
     try {
@@ -62,12 +65,14 @@ const renderProducts = (arrayOfProducts) => {
          <p class="card-text">${description}</p>
          <p class="card-text">${brand}</p>
          <p class="card-text">${price}</p>
-         <a href='./edit.html?id${_id}' class='btn btn-primary m-1'> <i class="bi bi-pencil-square"></i> </a>
+         <a href='./edit.html?id=${_id}' class='btn btn-primary m-1'> <i class="bi bi-pencil-square"></i> </a>
          <a class='btn btn-info rounded-pill m-1' onclick='deleteProduct("${_id}")'> <i class="bi bi-trash3"></i> Delete </a>
        </div>
      </div>`
     });
 }
+
+
 
 const deleteProduct = async (idToDelete) => {
     try {
@@ -87,7 +92,7 @@ const deleteProduct = async (idToDelete) => {
     }
 }
 
-const editProduct = async(idToChange) => {
+const editProduct = async() => {
     try {
         const editedProduct = {
             name : document.querySelector("#product-name").value,
@@ -96,16 +101,23 @@ const editProduct = async(idToChange) => {
             imageUrl : document.querySelector("#product-url").value,
             price : document.querySelector("#product-price").value,
         }
-        const res = await fetch(url + idToChange, {
+        const res = await fetch(url + id, {
             method: "PUT", 
+            body: JSON.stringify(editedProduct),
             headers: new Headers({
             "Content-Type": "application/json",
             "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2M2M5NDIzZWU3MzczODAwMTUzNzQzYjIiLCJpYXQiOjE2NzQxMzc2MjAsImV4cCI6MTY3NTM0NzIyMH0.lW0cx9aTKiLUaPLpRv2gXUgac5CwauCPFmdAyMuqCdo",
           }),
-          body: JSON.stringify(editedProduct),
+          
         }) 
         if(res.ok) {
             console.log(res)
+            getProducts()
+            document.querySelector("#product-name").value ="";
+            document.querySelector("#product-description").value = "";
+            document.querySelector("#product-brand").value= "";
+            document.querySelector("#product-url").value ="";
+            document.querySelector("#product-price").value = "";
         }
     } catch(error) {
         console.log(error)
